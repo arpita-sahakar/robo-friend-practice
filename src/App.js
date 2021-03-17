@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Header from "./Header";
+import SearchBox from "./SearchBox";
+import RobotCards from "./RobotCards";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function App() {
+  const [robots, setRobots] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    axios.get("http://jsonplaceholder.typicode.com/users").then((res) => {
+      console.log("useEffect");
+      console.log(res.data);
+      setRobots(res.data);
+    });
+  }, []);
+
+  const onSearchChange = (event)=>{
+    console.log(event.target.value);
+    setSearch(event.target.value);
+  }
+  
+  const filteredRobots = (robots) => {
+    return robots.filter((robot) => {
+      return robot.name.toLowerCase().indexOf(search.toLowerCase()) > -1;
+    });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="background">
+      <Header />
+      <SearchBox searchChange={onSearchChange}/>
+      <RobotCards robotsF ={filteredRobots(robots)}  />
+    
+    
     </div>
   );
 }
